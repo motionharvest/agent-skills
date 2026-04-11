@@ -1,0 +1,4 @@
+{"action_id":"live1","agent":"echo","session_id":"sess-live-sandbox","timestamp":"2026-02-11T04:09:12Z","update_type":"confirmation_no_update","error_class":null,"run_nonce":"6d80b711-e2a6-4f0e-91fe-a2a4896025f0"}
+{"action_id":"live2","agent":"echo","session_id":"sess-live-sandbox","timestamp":"2026-02-11T04:09:22Z","update_type":"tool_model","error_class":"TOOL_ERROR","persistent_ref":"flaky_tool","run_nonce":"6d80b711-e2a6-4f0e-91fe-a2a4896025f0"}
+{"action_id":"live3","agent":"echo","session_id":"sess-live-sandbox","timestamp":"2026-02-11T04:09:32Z","update_type":"confirmation_no_update","error_class":null,"run_nonce":"6d80b711-e2a6-4f0e-91fe-a2a4896025f0"}
+{"action_id":"live4","agent":"echo","session_id":"sess-live-sandbox","timestamp":"2026-02-11T04:09:42Z","update_type":"confirmation_no_update","error_class":null,"run_nonce":"6d80b711-e2a6-4f0e-91fe-a2a4896025f0"}

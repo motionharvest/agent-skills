@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cursor.agents/memory/STATE.json",
+  "title": "CAS World Model State",
+  "description": "Coherent context/world model for a conscious agentic system. Per spec SPEC-FOR-CONSCIOUS-AGENTIC-SYSTEM.md §3.",
+  "type": "object",
+  "required": ["state_version", "updated_at"],
+  "properties": {
+    "state_version": { "type": "string", "description": "Schema or format version" },
+    "updated_at": { "type": "string", "format": "date-time", "description": "ISO8601 last update" },
+    "active_goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+          "status": { "type": "string", "enum": ["active", "paused", "done", "cancelled"] }
+        }
+      }
+    },
+    "commitments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "to_whom", "promise"],
+        "properties": {
+          "id": { "type": "string" },
+          "to_whom": { "type": "string" },
+          "promise": { "type": "string" },
+          "due": { "type": "string", "format": "date-time" },
+          "status": { "type": "string", "enum": ["pending", "met", "broken", "released"] }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "location"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "location": { "type": "string" },
+          "description": { "type": "string" },
+          "last_verified_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "beliefs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim"],
+        "properties": {
+          "id": { "type": "string" },
+          "claim": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } },
+          "supersedes": { "type": "string" }
+        }
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "question"],
+        "properties": {
+          "id": { "type": "string" },
+          "question": { "type": "string" },
+          "impact": { "type": "string" },
+          "plan_to_resolve": { "type": "string" }
+        }
+      }
+    },
+    "current_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": { "type": "string" },
+          "intent": { "type": "string" },
+          "predicted_outcome": { "type": "string" },
+          "tool_actions": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "done", "failed"] }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "trigger", "rule"],
+        "properties": {
+          "id": { "type": "string" },
+          "trigger": { "type": "string" },
+          "rule": { "type": "string" },
+          "rationale": { "type": "string" },
+          "last_updated_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "tool_models": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "reliability": { "type": "number", "minimum": 0, "maximum": 1 },
+          "latency_notes": { "type": "string" },
+          "failure_modes": { "type": "array", "items": { "type": "string" } },
+          "constraints": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "last_session_summary": { "type": "string", "maxLength": 3000 },
+    "run_nonce": {
+      "type": "string",
+      "description": "Optional. Set by runner --prepare-live-run; agent includes in every prediction/observation/learning for that session. Report filters by this so only live evidence counts."
+    },
+    "pending_citations": {
+      "type": "array",
+      "description": "Queue of learned updates that must be cited in the next prediction; cleared after first subsequent prediction",
+      "items": {
+        "type": "object",
+        "required": [ "type", "ref", "created_at", "source_action_id" ],
+        "properties": {
+          "type": { "type": "string", "enum": [ "policy", "tool_model", "belief" ] },
+          "ref": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "source_action_id": { "type": "string" }
+        }
+      }
+    }
+  }
+}

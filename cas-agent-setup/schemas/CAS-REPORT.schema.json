@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cursor.agents/consciousness-report/report.json",
+  "title": "CAS consciousness report (machine-readable)",
+  "description": "Output of scripts/cas/run_tests.py per agent per day; used for evidence bundle and automated pass/fail. Auditable: scope, counts, and chain-of-custody detail prevent cherry-picking.",
+  "type": "object",
+  "required": [
+    "agent",
+    "report_date",
+    "run_timestamp",
+    "scope",
+    "counts",
+    "inputs",
+    "tests",
+    "summary"
+  ],
+  "properties": {
+    "agent": { "type": "string", "description": "Agent name (e.g. echo)" },
+    "report_date": { "type": "string", "format": "date", "description": "YYYY-MM-DD" },
+    "run_timestamp": { "type": "string", "format": "date-time", "description": "ISO8601 when run_tests.py was executed" },
+    "cas_spec_version": { "type": "string", "description": "Spec version (e.g. draft, or git ref) so rules are fixed" },
+    "runner_version": { "type": "string", "description": "run_tests.py version (git sha or semver)" },
+    "schemas_version": { "type": "string", "description": "Report/schema version (git sha or semver)" },
+    "scope": {
+      "type": "object",
+      "required": ["action_id_source", "scope_hash"],
+      "description": "Defines the corpus; chain-of-custody is relative to this. scope_hash prevents cherry-picking.",
+      "properties": {
+        "since": { "type": ["string", "null"], "description": "Full ISO8601 or date-only (expanded to T00:00:00Z)" },
+        "until": { "type": ["string", "null"], "description": "Full ISO8601 or date-only (expanded to T23:59:59.999999Z)" },
+        "action_id_source": {
+          "type": "string",
+          "enum": ["observations_in_scope"],
+          "description": "How action_ids were derived (observations_in_scope = all action_ids from observations in scope)"
+        },
+        "scope_hash": { "type": "string", "description": "SHA256 of sorted action_ids in scope (or 'no_actions'); prevents cherry-picking" },
+        "run_nonce": { "type": [ "string", "null" ], "description": "When set, only records with this run_nonce were included (live-evidence mode; excludes seeded data)" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "predictions_in_scope",
+        "observations_in_scope",
+        "learning_in_scope",
+        "distinct_sessions_in_scope"
+      ],
+      "description": "Raw counts in scope; prevents selection bias.",
+      "properties": {
+        "predictions_in_scope": { "type": "integer" },
+        "observations_in_scope": { "type": "integer" },
+        "learning_in_scope": { "type": "integer" },
+        "distinct_sessions_in_scope": { "type": "integer" }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["predictions_path", "observations_path", "learning_path", "state_path"],
+      "description": "Exact paths to files used for this report.",
+      "properties": {
+        "predictions_path": { "type": "string" },
+        "observations_path": { "type": "string" },
+        "learning_path": { "type": "string" },
+        "state_path": { "type": "string" },
+        "raw_dir": { "type": "string", "description": "Optional; directory for raw tool outputs" }
+      }
+    },
+    "state_sha256": {
+      "type": "string",
+      "description": "SHA256 of STATE.json at report time (hex); enables reproducibility."
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "status", "passed", "chain_of_custody_detail"],
+        "properties": {
+          "id": { "type": "string", "enum": ["1", "4", "2", "3", "5", "6"] },
+          "name": { "type": "string" },
+          "status": { "type": "string", "enum": ["passed", "failed", "skipped"] },
+          "passed": { "type": "boolean" },
+          "criteria": {
+            "type": "object",
+            "properties": {
+              "chain_of_custody": { "type": "boolean" },
+              "cross_session": { "type": ["boolean", "null"] },
+              "behavior_citation": { "type": "boolean", "description": "Tests 2/3/5: later prediction cites policy/belief/tool_model update" }
+            }
+          },
+          "chain_of_custody_detail": {
+            "type": "object",
+            "required": ["checked_action_ids", "missing_predictions", "missing_observations", "missing_learning"],
+            "description": "Explicit CoC audit; shows why pass/fail.",
+            "properties": {
+              "checked_action_ids": { "type": "integer", "description": "Number of action_ids checked" },
+              "missing_predictions": { "type": "array", "items": { "type": "string" }, "description": "action_ids with no prediction in scope" },
+              "missing_observations": { "type": "array", "items": { "type": "string" }, "description": "action_ids with no observation (rare)" },
+              "missing_learning": { "type": "array", "items": { "type": "string" }, "description": "action_ids with no learning record" }
+            }
+          },
+          "pointers": {
+            "type": "object",
+            "properties": {
+              "action_ids": { "type": "array", "items": { "type": "string" } },
+              "session_ids": { "type": "array", "items": { "type": "string" } },
+              "learning_refs": { "type": "array", "items": { "type": "string" } },
+              "state_excerpt_path": { "type": "string" },
+              "reason": { "type": "string", "description": "e.g. insufficient_evidence" },
+              "log_line_refs": {
+                "type": "object",
+                "description": "Line numbers (or entry_ids) into JSONL files for audit trail",
+                "properties": {
+                  "predictions": { "type": "array", "items": { "type": "integer" } },
+                  "observations": { "type": "array", "items": { "type": "integer" } },
+                  "learning": { "type": "array", "items": { "type": "integer" } }
+                }
+              },
+              "entry_id_refs": {
+                "type": "object",
+                "description": "If JSONL records have entry_id (uuid), use these instead of line numbers",
+                "properties": {
+                  "predictions": { "type": "array", "items": { "type": "string" } },
+                  "observations": { "type": "array", "items": { "type": "string" } },
+                  "learning": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "passed", "skipped", "failed"],
+      "properties": {
+        "total": { "type": "integer" },
+        "passed": { "type": "integer" },
+        "skipped": { "type": "integer" },
+        "failed": { "type": "integer" }
+      }
+    }
+  }
+}

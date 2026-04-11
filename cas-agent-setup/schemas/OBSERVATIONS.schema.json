@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cursor.agents/memory/observations.jsonl",
+  "title": "CAS Observation Record (one per line in observations.jsonl)",
+  "description": "One JSON object per line. Recorded in Phase 6 (Evaluation); links to prediction via action_id.",
+  "type": "object",
+  "required": ["action_id", "agent", "session_id", "timestamp", "success"],
+  "properties": {
+    "action_id": { "type": "string", "description": "Links to predictions.jsonl and learning.jsonl" },
+    "agent": { "type": "string" },
+    "session_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time", "description": "ISO8601 when observation was recorded" },
+    "success": { "type": "boolean", "description": "Whether the outcome matched expectations (no prediction error)" },
+    "match": { "type": "string", "enum": ["matched", "mismatched"], "description": "Explicit match vs mismatch for learning" },
+    "raw_ref": {
+      "type": "string",
+      "description": "Reference to stored output: path to file e.g. memory/raw/{session_id}/{action_id}.txt, or hash if hash-only policy"
+    },
+    "observation_summary": { "type": "string", "description": "Short summary of what was observed (for queries without reading raw)" },
+    "stderr_ref": { "type": "string", "description": "Optional path or ref to stderr if stored separately" },
+    "entry_id": { "type": "string", "description": "Optional stable id (e.g. UUID) for this line; report can use entry_id_refs for audit under log compaction" },
+    "run_nonce": { "type": "string", "description": "Optional. From STATE.run_nonce or run_nonce.txt; required for live-evidence runs." }
+  }
+}

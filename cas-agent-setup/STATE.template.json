@@ -1,0 +1,14 @@
+{
+  "state_version": "1.0",
+  "updated_at": "2026-02-10T00:00:00.000Z",
+  "active_goals": [],
+  "commitments": [],
+  "artifacts": [],
+  "beliefs": [],
+  "uncertainties": [],
+  "current_plan": [],
+  "policies": [],
+  "tool_models": {},
+  "last_session_summary": "",
+  "pending_citations": []
+}

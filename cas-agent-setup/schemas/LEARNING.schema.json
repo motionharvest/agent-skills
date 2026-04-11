@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cursor.agents/memory/learning.jsonl",
+  "title": "CAS Learning Record (one per line in learning.jsonl)",
+  "description": "One JSON object per line. Recorded in Phase 7; always append after evaluation (confirmation or error-driven update).",
+  "type": "object",
+  "required": ["action_id", "agent", "session_id", "timestamp", "update_type"],
+  "properties": {
+    "action_id": { "type": "string" },
+    "agent": { "type": "string" },
+    "session_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "update_type": {
+      "type": "string",
+      "enum": ["confirmation_no_update", "policy", "tool_model", "belief", "uncertainty", "user_query"],
+      "description": "confirmation_no_update when matched; otherwise one of the persistent update types"
+    },
+    "error_class": {
+      "type": ["string", "null"],
+      "enum": [null, "MODEL_ERROR", "TOOL_ERROR", "OBSERVATION_ERROR", "EXECUTION_ERROR", "GOAL_ERROR"],
+      "description": "Null when matched; set when mismatched per spec §4.2"
+    },
+    "persistent_ref": {
+      "type": "string",
+      "description": "Where the persistent change was made: STATE.json (policy/tool_model/belief/uncertainty id or field), or user_query"
+    },
+    "rationale": { "type": "string", "description": "Short reason for the learning update" },
+    "entry_id": { "type": "string", "description": "Optional stable id (e.g. UUID) for this line; report can use entry_id_refs for audit under log compaction" },
+    "run_nonce": { "type": "string", "description": "Optional. From STATE.run_nonce or run_nonce.txt; required for live-evidence runs." }
+  }
+}
