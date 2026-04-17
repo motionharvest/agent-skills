@@ -335,3 +335,4 @@ Confirm:
 If the user asks to modify the overlay behavior, update the implementation by editing the installed copy and keep the reference behavior aligned with the user's request when appropriate.
 
 When describing, installing, or removing this skill, always treat `references/LlmInspectorOverlay.tsx` as the implementation source of truth.
+

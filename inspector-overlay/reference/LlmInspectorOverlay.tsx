@@ -502,6 +502,61 @@ export default function LlmInspectorOverlay({
       renderSelectedOverlays();
     }
 
+    async function writeTextWithFallback(text: string): Promise<void> {
+      const clipboardAvailable =
+        typeof navigator !== "undefined" &&
+        !!navigator.clipboard &&
+        typeof navigator.clipboard.writeText === "function";
+
+      if (clipboardAvailable && document.hasFocus() && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "true");
+      textarea.setAttribute("aria-hidden", "true");
+
+      Object.assign(textarea.style, {
+        position: "fixed",
+        top: "0",
+        left: "-9999px",
+        width: "1px",
+        height: "1px",
+        opacity: "0",
+        pointerEvents: "none",
+      } satisfies Partial<CSSStyleDeclaration>);
+
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+
+      let copied = false;
+
+      try {
+        copied = document.execCommand("copy");
+      } catch {
+        copied = false;
+      } finally {
+        document.body.removeChild(textarea);
+      }
+
+      if (copied) return;
+
+      console.log("LLM inspector payload (clipboard fallback failed):", text);
+
+      const promptResult = window.prompt(
+        "Clipboard access failed. Copy this payload manually:",
+        text
+      );
+
+      if (promptResult === null) {
+        throw new Error("Clipboard copy failed because the document was not focused.");
+      }
+    }
+
     async function copyPayload(
       elements: Element[],
       anchorEl?: Element,
@@ -512,7 +567,7 @@ export default function LlmInspectorOverlay({
       const payload = buildPayload(elements);
       const text = JSON.stringify(payload, null, 2);
 
-      await navigator.clipboard.writeText(text);
+      await writeTextWithFallback(text);
       console.log("Copied LLM inspector payload:", payload);
 
       clearToastTimeout();
@@ -552,6 +607,7 @@ export default function LlmInspectorOverlay({
       e.preventDefault();
       e.stopPropagation();
       clearNativeSelection();
+      window.focus();
     }
 
     function onMouseMove(e: MouseEvent) {
@@ -607,6 +663,7 @@ export default function LlmInspectorOverlay({
       e.stopPropagation();
       e.stopImmediatePropagation();
       clearNativeSelection();
+      window.focus();
 
       if (e.shiftKey) {
         toggleSelected(el);
@@ -618,8 +675,8 @@ export default function LlmInspectorOverlay({
             ? `Selected ${selectedElsRef.current.length} element${selectedElsRef.current.length === 1 ? "" : "s"}`
             : `Deselected · ${selectedElsRef.current.length} remaining`
         ).catch((error) => {
-          console.error("Failed to copy multi-select payload:", error);
-          showLabelText("Failed to copy payload");
+          console.error("Failed to copy LLM inspector payload:", error);
+          showLabelText("Copy failed · payload logged");
         });
 
         return;
@@ -629,7 +686,7 @@ export default function LlmInspectorOverlay({
 
       void copyPayload([el], el).catch((error) => {
         console.error("Failed to copy LLM inspector payload:", error);
-        showLabelText("Failed to copy payload");
+        showLabelText("Copy failed · payload logged");
       });
     }
 
@@ -666,8 +723,8 @@ export default function LlmInspectorOverlay({
             anchor || undefined,
             `Copied multi-select payload (${selectedElsRef.current.length} elements)`
           ).catch((error) => {
-            console.error("Failed to copy multi-select payload:", error);
-            showLabelText("Failed to copy payload");
+            console.error("Failed to copy LLM inspector payload:", error);
+            showLabelText("Copy failed · payload logged");
           });
         }
       }
