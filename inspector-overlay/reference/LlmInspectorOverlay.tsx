@@ -12,14 +12,13 @@ type SourceHints = {
 
 type TargetPayload = {
   tag: string;
-  dataTestId: string | null;
-  id: string | null;
-  role: string | null;
-  name: string | null;
-  textPreview: string;
   selector: string;
-  xpath: string;
-  rect: {
+  textPreview?: string;
+  dataTestId?: string;
+  id?: string;
+  role?: string;
+  name?: string;
+  rect?: {
     x: number;
     y: number;
     width: number;
@@ -29,24 +28,15 @@ type TargetPayload = {
     bottom: number;
     left: number;
   };
-  sourceHints: SourceHints;
+  sourceHints?: SourceHints;
 };
 
 type Payload = {
-  intent: string;
   page: {
-    url: string;
     route: string;
-    title: string;
-    viewport: {
-      width: number;
-      height: number;
-    };
   };
-  selectionMode: "single" | "multi";
   target?: TargetPayload;
   targets?: TargetPayload[];
-  llmInstruction: string;
 };
 
 type Props = {
@@ -169,7 +159,7 @@ export default function LlmInspectorOverlay({
       return text.slice(0, 220);
     }
 
-    function getAccessibleName(el: Element): string | null {
+    function getAccessibleName(el: Element): string | undefined {
       const ariaLabel = el.getAttribute("aria-label");
       if (ariaLabel?.trim()) return ariaLabel.trim();
 
@@ -196,7 +186,7 @@ export default function LlmInspectorOverlay({
       const text = getBestText(el);
       if (text) return text.slice(0, 160);
 
-      return null;
+      return undefined;
     }
 
     function isLikelyGeneratedClass(className: string) {
@@ -252,28 +242,6 @@ export default function LlmInspectorOverlay({
       return parts.join(" > ");
     }
 
-    function xpath(el: Element | null): string {
-      if (!(el instanceof Element)) return "";
-
-      const parts: string[] = [];
-      let node: Element | null = el;
-
-      while (node && node.nodeType === 1) {
-        let index = 1;
-        let sib = node.previousElementSibling;
-
-        while (sib) {
-          if (sib.nodeName === node.nodeName) index++;
-          sib = sib.previousElementSibling;
-        }
-
-        parts.unshift(`${node.nodeName.toLowerCase()}[${index}]`);
-        node = node.parentElement;
-      }
-
-      return `/${parts.join("/")}`;
-    }
-
     function getStableSelector(el: Element): string {
       const dataTestId = el.getAttribute("data-testid");
       if (dataTestId) {
@@ -309,7 +277,7 @@ export default function LlmInspectorOverlay({
       return cssPath(el);
     }
 
-    function getSourceHintsObject(el: Element): SourceHints {
+    function getSourceHintsObject(el: Element): SourceHints | undefined {
       let node: Element | null = el;
       const out: SourceHints = {};
 
@@ -322,21 +290,44 @@ export default function LlmInspectorOverlay({
         node = node.parentElement;
       }
 
-      return out;
+      return Object.keys(out).length ? out : undefined;
+    }
+
+    function compact<T extends Record<string, unknown>>(obj: T): T {
+      const entries = Object.entries(obj).filter(([, value]) => {
+        if (value == null) return false;
+        if (typeof value === "string" && value.trim() === "") return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        if (
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          Object.keys(value as object).length === 0
+        ) {
+          return false;
+        }
+        return true;
+      });
+
+      return Object.fromEntries(entries) as T;
     }
 
     function buildTarget(el: Element): TargetPayload {
       const rect = el.getBoundingClientRect();
+      const textPreview = getBestText(el);
+      const dataTestId = el.getAttribute("data-testid") || undefined;
+      const id = (el as HTMLElement).id || undefined;
+      const role = el.getAttribute("role") || undefined;
+      const name = getAccessibleName(el);
+      const sourceHints = getSourceHintsObject(el);
 
-      return {
+      return compact({
         tag: el.tagName.toLowerCase(),
-        dataTestId: el.getAttribute("data-testid"),
-        id: (el as HTMLElement).id || null,
-        role: el.getAttribute("role") || null,
-        name: getAccessibleName(el),
-        textPreview: getBestText(el),
         selector: getStableSelector(el),
-        xpath: xpath(el),
+        textPreview: textPreview || undefined,
+        dataTestId,
+        id,
+        role,
+        name,
         rect: {
           x: Math.round(rect.x),
           y: Math.round(rect.y),
@@ -347,65 +338,28 @@ export default function LlmInspectorOverlay({
           bottom: Math.round(rect.bottom),
           left: Math.round(rect.left),
         },
-        sourceHints: getSourceHintsObject(el),
-      };
+        sourceHints,
+      });
     }
 
     function buildPayload(elements: Element[]): Payload {
       const route = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      const page = {
-        url: window.location.href,
-        route,
-        title: document.title,
-        viewport: {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        },
-      };
-
       const targets = elements.map(buildTarget);
 
       if (targets.length === 1) {
-        const t = targets[0];
-        const instruction = [
-          `Route: "${route}".`,
-          t.dataTestId
-            ? `Primary hook: data-testid="${t.dataTestId}".`
-            : `Primary locator: "${t.selector}".`,
-          t.name ? `Accessible name: "${t.name}".` : "",
-          t.textPreview ? `Visible text: "${t.textPreview}".` : "",
-          t.sourceHints.file ? `Likely file: ${t.sourceHints.file}.` : "",
-          t.sourceHints.component
-            ? `Likely component: ${t.sourceHints.component}.`
-            : "",
-          t.sourceHints.mapKey
-            ? `Likely mapped item: ${t.sourceHints.mapKey}.`
-            : "",
-          `Geometry: x=${t.rect.x}, y=${t.rect.y}, width=${t.rect.width}, height=${t.rect.height}.`,
-        ]
-          .filter(Boolean)
-          .join(" ");
-
         return {
-          intent: "inspect-and-modify-ui-element",
-          page,
-          selectionMode: "single",
-          target: t,
-          llmInstruction: instruction,
+          page: {
+            route,
+          },
+          target: targets[0],
         };
       }
 
       return {
-        intent: "inspect-and-modify-ui-elements",
-        page,
-        selectionMode: "multi",
+        page: {
+          route,
+        },
         targets,
-        llmInstruction: [
-          `Route: "${route}".`,
-          `There are ${targets.length} selected elements.`,
-          `Use each target's stable hook first, then visible text, then selector, then geometry.`,
-          `These elements were multi-selected intentionally and should be treated as a set.`,
-        ].join(" "),
       };
     }
 
