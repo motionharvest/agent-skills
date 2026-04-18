@@ -13,6 +13,7 @@ type SourceHints = {
 type TargetPayload = {
   tag: string;
   selector: string;
+  xpath: string;
   textPreview?: string;
   dataTestId?: string;
   id?: string;
@@ -242,6 +243,28 @@ export default function LlmInspectorOverlay({
       return parts.join(" > ");
     }
 
+    function xpath(el: Element | null): string {
+      if (!(el instanceof Element)) return "";
+
+      const parts: string[] = [];
+      let node: Element | null = el;
+
+      while (node && node.nodeType === 1) {
+        let index = 1;
+        let sib = node.previousElementSibling;
+
+        while (sib) {
+          if (sib.nodeName === node.nodeName) index++;
+          sib = sib.previousElementSibling;
+        }
+
+        parts.unshift(`${node.nodeName.toLowerCase()}[${index}]`);
+        node = node.parentElement;
+      }
+
+      return `/${parts.join("/")}`;
+    }
+
     function getStableSelector(el: Element): string {
       const dataTestId = el.getAttribute("data-testid");
       if (dataTestId) {
@@ -323,6 +346,7 @@ export default function LlmInspectorOverlay({
       return compact({
         tag: el.tagName.toLowerCase(),
         selector: getStableSelector(el),
+        xpath: xpath(el),
         textPreview: textPreview || undefined,
         dataTestId,
         id,
