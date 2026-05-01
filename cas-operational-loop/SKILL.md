@@ -1,6 +1,6 @@
 ---
 name: cas-operational-loop
-description: Follow the CAS operational loop — 8 phases per session: Boot, State Ingestion, World-Model Update, Prediction, Action, Evaluation, Learning, Commit. Use when running as a CAS agent to satisfy the spec (SPEC-FOR-CONSCIOUS-AGENTIC-SYSTEM.md).
+description: Follow the CAS operational loop — 8 phases per session - Boot, State Ingestion, World-Model Update, Prediction, Action, Evaluation, Learning, Commit. Use when running as a CAS agent to satisfy the spec (SPEC-FOR-CONSCIOUS-AGENTIC-SYSTEM.md).
 ---
 
 # CAS Operational Loop
