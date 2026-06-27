@@ -23,7 +23,8 @@ This skill orchestrates child skills in sequence. Read each child skill at its p
 | 5 | [ux-methodology-process](../ux-methodology-process/SKILL.md) | Page architecture and section order |
 | 6 | [ux-methodology-design](../ux-methodology-design/SKILL.md) | Visual hierarchy and interaction design |
 | 7 | [ab-testing](../ab-testing/SKILL.md) | What to validate after launch |
-| 8–9 | [motion-web-design](../motion-web-design/SKILL.md) | How it looks and moves |
+| 8 | [visual-identity](../visual-identity/SKILL.md) | Brand personality, typography, motion vocabulary — pre-code design lock |
+| 9–10 | [motion-web-design](../motion-web-design/SKILL.md) | How it looks and moves — receives design-system.md from visual-identity |
 
 **Distinction:** [persona-archetypes](../persona-archetypes/SKILL.md) defines **human** audiences. [motion-web-design/archetypes.md](../motion-web-design/archetypes.md) defines **visual site** templates (VEX, Velorah, etc.). This skill connects them.
 
@@ -42,9 +43,10 @@ Audience Site Brief (Full Pipeline):
 - [ ] 5. Design process — page architecture, section order (ux-methodology-process)
 - [ ] 6. Design optimization — visual hierarchy, interactions (ux-methodology-design)
 - [ ] 7. Architect page — sections, copy direction (synthesized from phases 2–6)
-- [ ] 8. Map visual archetype — motion site template + rationale
+- [ ] 8. Map visual archetype — motion site preset + rationale
+- [ ] 8b. Visual identity — brand keywords, typography, color tokens, motion vocabulary (visual-identity)
 - [ ] 9. Draft experiment backlog — ranked A/B hypotheses
-- [ ] 10. Output build prompt — handoff to motion-web-design
+- [ ] 10. Output build prompt — handoff to motion-web-design (includes design-system.md)
 - [ ] 11. Confirm with user before building (unless they asked to build immediately)
 ```
 
@@ -234,6 +236,8 @@ Use the Messaging Matrix from [persona-archetypes/synthesis.md](../persona-arche
 
 Read [motion-web-design/presets.md](../motion-web-design/presets.md) and [modules/README.md](../motion-web-design/modules/README.md).
 
+**Then run [visual-identity/SKILL.md](../visual-identity/SKILL.md)** to lock the design language (brand keywords → typography → color tokens → motion vocabulary → texture → preset selection). This produces `design-system.md`, which is the required handoff artifact for motion-web-design.
+
 Cross-reference persona → site mapping from [persona-archetypes/synthesis.md](../persona-archetypes/synthesis.md#persona--motion-site-mapping):
 
 | Audience signals | Preset base | Module overrides to consider |
@@ -340,5 +344,8 @@ Before delivering the brief:
 
 - [build-prompt-template.md](build-prompt-template.md) — Final deliverable format for motion-web-design handoff
 - [persona-archetypes/synthesis.md](../persona-archetypes/synthesis.md) — Messaging matrix, persona → site mapping
-- [motion-web-design/archetypes.md](../motion-web-design/archetypes.md) — Full visual specs for all 8 reference sites
+- [visual-identity/SKILL.md](../visual-identity/SKILL.md) — Brand personality, typography, motion vocabulary (Phase 8b)
+- [motion-web-design/archetypes.md](../motion-web-design/archetypes.md) — Persona → preset mapping
+- [motion-web-design/presets.md](../motion-web-design/presets.md) — 8 visual archetypes with token bundles
+- [motion-web-design/compose-prompt.md](../motion-web-design/compose-prompt.md) — Build prompt assembly template
 - [ab-testing/patterns.md](../ab-testing/patterns.md) — Winning patterns by category

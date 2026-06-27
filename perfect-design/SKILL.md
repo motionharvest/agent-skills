@@ -93,7 +93,9 @@ Based on diagnosis, hand off to the right tool:
 | "I want to see what's working" | `/reference-site-analysis` | Analyzes successful sites, extracts patterns |
 | "I have a site but sections are wrong" OR "What should the page flow be?" | `/ux-methodology-process` | Determines architecture, section order, journey |
 | "I have structure but it looks bad" OR "UX feels clunky" | `/ux-methodology-design` | Optimizes visual hierarchy, interactions, feedback |
-| "I want to build from scratch" | `/audience-site-brief` | Full orchestration: research → personas → reference → architecture → design → build |
+| "It looks professional but generic — no personality" | `/visual-identity` | Locks brand keywords, typography, color system, motion vocabulary before code |
+| "I want to build from scratch" | `/audience-site-brief` | Full orchestration: research → personas → reference → architecture → visual identity → build |
+| "I want to build / rebuild the site with great animations" | `/motion-web-design` | Builds Vite + GSAP + Lenis site from a design system and build prompt |
 | "Nothing's working, need a complete audit" | yourself (or `/perfect-design` again) | Run a diagnostic: read existing ux.md, identify biggest gaps |
 
 **How to hand off:**

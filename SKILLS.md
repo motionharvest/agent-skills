@@ -55,6 +55,27 @@ These skills coordinate website design and improvement work through a shared `ux
 **Dependencies:** All other UX skills (called by this orchestrator)  
 **When to use:** When starting a new site from scratch and want guided flow.
 
+### [visual-identity](./visual-identity/SKILL.md)
+**Lock the design language before touching code.** Defines brand personality keywords, explores typography, expands the color system to a full token set, decides texture, and names 4 signature motion vocabulary moves. Outputs `design-system.md` for `motion-web-design`.
+
+**Tools:** Claude Code, Cursor CLI  
+**Dependencies:** ux-methodology-design (recommended); persona-archetypes (for keyword grounding)  
+**When to use:** After UX phases, before building. Also when a site looks "correct but generic."
+
+### [motion-web-design](./motion-web-design/SKILL.md)
+**Build Awwwards-quality sites with Vite + GSAP + Lenis.** Takes a build prompt and design-system.md (from audience-site-brief + visual-identity) and produces a coded, running landing page with choreographed scroll animations, micro-interactions, Unsplash imagery, and documented video slots for Replicate.
+
+**Tools:** Claude Code, Cursor CLI  
+**Dependencies:** visual-identity (required — produces design-system.md), audience-site-brief (produces build prompt)  
+**When to use:** When building a new site or upgrading an existing one with production-quality motion.
+
+### [ab-testing](./ab-testing/SKILL.md)
+**Plan conversion experiments with PIE-scored hypotheses.** Produces a prioritized test backlog using the PIE framework (Potential, Importance, Ease). Includes hypothesis templates, sample size guidance, and persona-calibrated CTA variants. Prioritizes headline/copy tests over cosmetic tests.
+
+**Tools:** Claude Code, Cursor CLI  
+**Dependencies:** persona-archetypes (recommended for CTA calibration)  
+**When to use:** After page launch to validate messaging; before launch to plan what to test first.
+
 ---
 
 ## CAS Skills
@@ -123,7 +144,9 @@ Supported via file-based interface. Use symlinks to project-local `.skills/` or 
 1. Run /audience-site-brief with project goal
 2. Orchestrates: /audience-research → /persona-archetypes → /reference-site-analysis
 3. Then: /ux-methodology-process → /ux-methodology-design
-4. Outputs build prompt for /motion-web-design
+4. Run /visual-identity to lock brand personality, typography, motion vocabulary
+5. Outputs design-system.md + build prompt for /motion-web-design
+6. Run /ab-testing to plan post-launch experiments
 ```
 
 ### Just Fix The Copy
