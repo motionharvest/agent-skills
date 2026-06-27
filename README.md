@@ -121,19 +121,7 @@ See individual skill directories for additional capabilities.
 ## Installation
 
 ```bash
-./install.sh
+npx skills@latest add motionharvest/agent-skills
 ```
 
-Interactive setup:
-1. Choose which tools you use (Claude Code, Cursor CLI, Python, OpenCode, Codex)
-2. Select which skills to install
-3. Script creates symlinks to appropriate tool directories
-
-**Supported tool directories:**
-- **Claude Code:** `~/.claude/skills/`
-- **Cursor CLI:** `~/.cursor/skills/`
-- **Python:** `~/.skills/`
-- **OpenCode:** `~/.opencode/skills/`
-- **Codex:** `~/.codex/skills/`
-
-After installation, skills are immediately available in your tools.
+This installs all available skills to your configured tools.
