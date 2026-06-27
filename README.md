@@ -2,13 +2,21 @@
 
 Reusable skills for AI agents across multiple tools: Claude Code, Cursor CLI, Python, OpenCode, Codex.
 
-Includes a complete **UX/design coordination system** and **Conscious Agentic System (CAS) infrastructure**.
+---
+
+## Installation
+
+```bash
+npx skills@latest add motionharvest/agent-skills
+```
+
+This installs all available skills to your configured tools.
 
 ---
 
 ## UX & Design Skills
 
-A complete system for website research, strategy, and design. All skills coordinate through a shared `ux.md` file — one source of truth for all decisions, research, personas, architecture, and design rules.
+A complete end-to-end system for website research, strategy, design, and implementation. All skills coordinate through a shared `ux.md` file — one source of truth for all decisions, research, personas, architecture, and design rules.
 
 **Start here:** Run [`/perfect-design`](./perfect-design/SKILL.md) with a screenshot or vague goal. It diagnoses what's needed and routes to the right tools.
 
@@ -30,16 +38,25 @@ A complete system for website research, strategy, and design. All skills coordin
 **Design Phase**
 - **[ux-methodology-design](./ux-methodology-design/SKILL.md)** — Optimize visual hierarchy, interactions, and presentation using design laws (Fitts's Law, Von Restorff, Doherty Threshold, etc.). Answers: *How should information be presented?*
 
+**Identity Phase**
+- **[visual-identity](./visual-identity/SKILL.md)** — Lock the brand language before writing code. Defines personality keywords, explores typography pairings, expands the color system to a full token set, and names 4 signature motion vocabulary moves. Outputs `design-system.md` ready for the build phase. Award-winning studios run this before implementation.
+
+**Build Phase**
+- **[motion-web-design](./motion-web-design/SKILL.md)** — Build the site. Takes a build prompt (from audience-site-brief) and `design-system.md` (from visual-identity) and produces a coded, running landing page using Vite + GSAP + Lenis. Implements choreographed scroll animations, micro-interactions, and polished visual design. Sources imagery from Unsplash and documents video slots for Replicate. Targets Awwwards-quality execution.
+
+**Optimization Phase**
+- **[ab-testing](./ab-testing/SKILL.md)** — Plan conversion experiments before and after launch. Produces a prioritized test backlog using the PIE framework (Potential, Importance, Ease), hypothesis templates, and persona-calibrated CTA variants. Enforces the right testing order: headlines first, button color last.
+
 **Full Orchestration**
-- **[audience-site-brief](./audience-site-brief/SKILL.md)** — Complete pipeline for users who want guided end-to-end flow. Coordinates all phases and outputs a build prompt for visual design tools.
+- **[audience-site-brief](./audience-site-brief/SKILL.md)** — Complete pipeline for users who want guided end-to-end flow. Coordinates all phases and outputs a build prompt for the identity and build phases.
 
 ### How It Works
 
 1. **Start:** Run `/perfect-design` with a goal or screenshot
 2. **Diagnose:** Skill asks 2–3 clarifying questions, checks `ux.md` for prior work
-3. **Route:** Hands off to appropriate skill (research → personas → reference sites → architecture → design)
+3. **Route:** Hands off to the appropriate skill in the pipeline
 4. **Coordinate:** Each skill reads and updates `ux.md`
-5. **Continue:** Come back anytime to check progress or move to next phase
+5. **Continue:** Come back anytime to check progress or move to the next phase
 
 ### Example Workflows
 
@@ -56,7 +73,9 @@ A complete system for website research, strategy, and design. All skills coordin
 → Run /audience-site-brief with project goal
 → Orchestrates: /audience-research → /persona-archetypes → /reference-site-analysis
 → Then: /ux-methodology-process → /ux-methodology-design
-→ Outputs build prompt for visual design
+→ Then: /visual-identity → design-system.md
+→ Then: /motion-web-design → coded, running site
+→ Then: /ab-testing → prioritized test backlog for launch
 ```
 
 **Copy & Messaging Only**
@@ -77,7 +96,17 @@ All UX skills coordinate through a shared `ux.md` file in your project. This fil
 - **Captures design rules** — visual hierarchy, emphasis, interaction principles
 - **Provides visibility** — one source of truth for the entire design process
 
-Each skill reads `ux.md` first to avoid duplicate work and understand context. Each skill updates it with new findings. Users can reference `ux.md` anytime to see progress.
+Each skill reads `ux.md` first to avoid duplicate work and understand context. Each skill updates it with new findings.
+
+---
+
+## Dev Tools
+
+### [inspector-overlay](./inspector-overlay/SKILL.md)
+
+**Add a DOM inspector overlay to React or Next.js apps.** Installs a development-only component that lets you hold `Alt` to inspect elements, `Alt+click` to copy single-element payloads for coding agents, and `Alt+Shift+click` to build multi-element selections. Payloads include semantic hooks (`data-testid`, `data-file`, `data-component`) that make AI-assisted edits dramatically more precise.
+
+Use when you want to point a coding agent at a specific element without describing it in words.
 
 ---
 
@@ -109,19 +138,3 @@ CAS solves this by making reasoning and learning operational. It enforces:
 - **Continuity** — session-to-session improvement without re-explaining context
 - **Error learning** — failures are classified and followed by explicit learning
 - **Grounded execution** — actions tied to observed state, not vague intent
-
----
-
-## Other Skills
-
-See individual skill directories for additional capabilities.
-
----
-
-## Installation
-
-```bash
-npx skills@latest add motionharvest/agent-skills
-```
-
-This installs all available skills to your configured tools.
