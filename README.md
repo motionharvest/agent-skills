@@ -1,10 +1,89 @@
 # agent-skills
 
-A set of skills for AI agents, built around the Conscious Agentic System (CAS).
+Reusable skills for AI agents across multiple tools: Claude Code, Cursor CLI, Python, OpenCode, Codex.
+
+Includes a complete **UX/design coordination system** and **Conscious Agentic System (CAS) infrastructure**.
+
+---
+
+## UX & Design Skills
+
+A complete system for website research, strategy, and design. All skills coordinate through a shared `ux.md` file — one source of truth for all decisions, research, personas, architecture, and design rules.
+
+**Start here:** Run [`/perfect-design`](./perfect-design/SKILL.md) with a screenshot or vague goal. It diagnoses what's needed and routes to the right tools.
+
+### The Pipeline
+
+**Entry Point**
+- **[perfect-design](./perfect-design/SKILL.md)** — General entry point. Accepts messy input (screenshots, URLs, descriptions, half-formed ideas). Diagnoses gaps, maintains `ux.md`, routes to specialized skills. No UX jargon required.
+
+**Research Phase**
+- **[audience-research](./audience-research/SKILL.md)** — Find real user pain points, barriers to entry, and language. Searches Reddit, forums, reviews, industry communities (not just tech). Grounds personas in evidence, not assumptions.
+
+**Strategy Phase**
+- **[persona-archetypes](./persona-archetypes/SKILL.md)** — Build psychologically-grounded personas using 50+ frameworks (Big Five, Enneagram, Jung, VALS, DISC, etc.). Map how they think, decide, and what messaging resonates.
+- **[reference-site-analysis](./reference-site-analysis/SKILL.md)** — Analyze 3–5 high-signal sites (validated by user reviews, market data, engagement). Extract UX patterns that actually work with this audience.
+
+**Architecture Phase**
+- **[ux-methodology-process](./ux-methodology-process/SKILL.md)** — Determine page structure and flow using psychology-based laws (Peak-End Rule, Mental Model, Miller's Law, Hick's Law, etc.). Answers: *What sections exist and in what order?*
+
+**Design Phase**
+- **[ux-methodology-design](./ux-methodology-design/SKILL.md)** — Optimize visual hierarchy, interactions, and presentation using design laws (Fitts's Law, Von Restorff, Doherty Threshold, etc.). Answers: *How should information be presented?*
+
+**Full Orchestration**
+- **[audience-site-brief](./audience-site-brief/SKILL.md)** — Complete pipeline for users who want guided end-to-end flow. Coordinates all phases and outputs a build prompt for visual design tools.
+
+### How It Works
+
+1. **Start:** Run `/perfect-design` with a goal or screenshot
+2. **Diagnose:** Skill asks 2–3 clarifying questions, checks `ux.md` for prior work
+3. **Route:** Hands off to appropriate skill (research → personas → reference sites → architecture → design)
+4. **Coordinate:** Each skill reads and updates `ux.md`
+5. **Continue:** Come back anytime to check progress or move to next phase
+
+### Example Workflows
+
+**Quick Improvement**
+```
+→ Run /perfect-design with screenshot
+→ It diagnoses the problem
+→ Routes to /ux-methodology-design (if visual) or /audience-research (if strategy)
+→ Updates ux.md with findings
+```
+
+**New Site From Scratch**
+```
+→ Run /audience-site-brief with project goal
+→ Orchestrates: /audience-research → /persona-archetypes → /reference-site-analysis
+→ Then: /ux-methodology-process → /ux-methodology-design
+→ Outputs build prompt for visual design
+```
+
+**Copy & Messaging Only**
+```
+→ Run /audience-research to find pain points
+→ Then /persona-archetypes to build personas
+→ Use findings to write better copy in /ux-methodology-design
+```
+
+See [SKILLS.md](./SKILLS.md) for detailed skill descriptions, dependencies, and tool support.
+
+### The `ux.md` File
+
+All UX skills coordinate through a shared `ux.md` file in your project. This file:
+- **Tracks all research** — pain points, language, objections from real users
+- **Documents personas** — psychology, decision style, trust signals
+- **Records decisions** — what sections exist, why, in what order
+- **Captures design rules** — visual hierarchy, emphasis, interaction principles
+- **Provides visibility** — one source of truth for the entire design process
+
+Each skill reads `ux.md` first to avoid duplicate work and understand context. Each skill updates it with new findings. Users can reference `ux.md` anytime to see progress.
+
+---
 
 ## CAS Skills
 
-These two skills work together: `cas-agent-setup` wires the file layout, and `cas-operational-loop` defines how to run each session.
+Conscious Agentic System infrastructure for reliable, auditable agent behavior. These skills enforce a structured approach to agent reasoning and learning.
 
 ### [cas-agent-setup](./cas-agent-setup/SKILL.md)
 
@@ -18,44 +97,43 @@ Use when bootstrapping an agent or aligning an existing agent with the CAS file 
 
 Use when operating as a CAS agent — this skill defines the *how*, while `cas-agent-setup` defines the *what files*.
 
-## CAS Use-Case: "Reliable Partner Mode"
+#### Why CAS?
 
-### What problem does CAS solve?
+Most agents fail because they:
+- Act without grounding in current context
+- Forget why they made a decision
+- Don't learn from mistakes, so failures repeat
 
-Most agents fail in one of three ways:
-- They act without grounding in current context.
-- They forget why they made a decision.
-- They don't learn from mistakes, so the same failure repeats.
-
-CAS solves this by making reasoning and learning operational, not optional. It turns "be thoughtful" into a repeatable runtime contract.
-
-### How does CAS solve it?
-
-CAS enforces an 8-phase loop on consequential work:
-1. Boot: load identity, constraints, and prior state.
-2. State Ingestion: capture what's new in the user/task/environment.
-3. World-Model Update: refresh assumptions about user intent and context.
-4. Prediction: state the smallest useful next move before acting.
-5. Action: execute with tools.
-6. Evaluation: compare outcome vs prediction.
-7. Learning: extract durable lessons.
-8. Commit: persist state + telemetry for next session continuity.
-
-Concretely, this is backed by durable files (`STATE.json`, `predictions.jsonl`, `observations.jsonl`, `learning.jsonl`) and run scoping via `run_nonce` so each session stays auditable.
-
-### How do you know it's working?
-
-Look for all of the following:
-- Traceability: every meaningful action has a prior prediction and a post-action evaluation.
-- Continuity: session-to-session behavior improves without re-explaining context.
-- Error containment: failures are classified and followed by explicit learning entries.
-- Grounded execution: actions are tied to observed state, not vague intent.
-- Commit hygiene: state and telemetry are updated on every consequential run.
-
-Practical signal: if you can answer "why did the agent do this?" and "what did it learn last time?" directly from CAS records, the system is doing its job.
+CAS solves this by making reasoning and learning operational. It enforces:
+- **Traceability** — every action has a prediction + evaluation
+- **Continuity** — session-to-session improvement without re-explaining context
+- **Error learning** — failures are classified and followed by explicit learning
+- **Grounded execution** — actions tied to observed state, not vague intent
 
 ---
 
 ## Other Skills
 
 See individual skill directories for additional capabilities.
+
+---
+
+## Installation
+
+```bash
+./install.sh
+```
+
+Interactive setup:
+1. Choose which tools you use (Claude Code, Cursor CLI, Python, OpenCode, Codex)
+2. Select which skills to install
+3. Script creates symlinks to appropriate tool directories
+
+**Supported tool directories:**
+- **Claude Code:** `~/.claude/skills/`
+- **Cursor CLI:** `~/.cursor/skills/`
+- **Python:** `~/.skills/`
+- **OpenCode:** `~/.opencode/skills/`
+- **Codex:** `~/.codex/skills/`
+
+After installation, skills are immediately available in your tools.
